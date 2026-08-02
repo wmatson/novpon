@@ -1,0 +1,26 @@
+{
+  "name": "novpon",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.7.2",
+    "drand-client": "1.2.1",
+    "preact": "10.26.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.52.0",
+    "@preact/preset-vite": "2.10.1",
+    "@types/node": "22.15.3",
+    "typescript": "5.8.3",
+    "vite": "6.3.3",
+    "vitest": "3.1.2"
+  }
+}

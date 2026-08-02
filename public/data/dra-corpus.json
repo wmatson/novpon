@@ -1,0 +1,6 @@
+[
+  {"id":"genesis:1:1","text":"In the beginning God created heaven, and earth.","source":{"book":"Genesis","chapter":1,"verse":1}},
+  {"id":"psalms:23:1","text":"The Lord ruleth me: and I shall want nothing.","source":{"book":"Psalms","chapter":23,"verse":1}},
+  {"id":"john:3:16","text":"For God so loved the world, as to give his only begotten Son.","source":{"book":"John","chapter":3,"verse":16}},
+  {"id":"matthew:5:9","text":"Blessed are the peacemakers: for they shall be called the children of God.","source":{"book":"Matthew","chapter":5,"verse":9}}
+]
