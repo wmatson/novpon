@@ -4,6 +4,8 @@ test('main menu has the three entry points in order', async ({ page }) => {
   await page.goto('/#/');
   await expect(page.locator('.menu button strong')).toHaveText(['Daily puzzle', 'Random verse', 'Make a puzzle']);
   await expect(page.getByRole('link', { name: /view source on github/i })).toHaveAttribute('href', 'https://github.com/wmatson/novpon');
+  await page.getByRole('link', { name: /notes on the corpus/i }).click();
+  await expect(page.locator('.notes-page')).toContainText('Psalms, Proverbs, Sirach, Wisdom');
 });
 
 test('custom puzzle creation shows a live word counter', async ({ page }) => {

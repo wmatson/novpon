@@ -1,37 +1,37 @@
 {
   "sampleSize": 1000,
-  "vocabularySize": 14802,
+  "vocabularySize": 5287,
   "embedder": "DeterministicWordEmbedder",
   "modes": {
     "same-index": {
-      "comparisons": 23159,
-      "exact": 0,
-      "veryClose": 1264,
-      "close": 636,
-      "far": 3077,
-      "noMatch": 18182,
-      "rightPosition": 23159,
+      "comparisons": 18267,
+      "exact": 1,
+      "veryClose": 931,
+      "close": 416,
+      "far": 2375,
+      "noMatch": 14544,
+      "rightPosition": 18267,
       "wrongPosition": 0
     },
     "best-reusable": {
-      "comparisons": 23159,
-      "exact": 30,
-      "veryClose": 13693,
-      "close": 3464,
-      "far": 5201,
-      "noMatch": 771,
-      "rightPosition": 972,
-      "wrongPosition": 22187
+      "comparisons": 18267,
+      "exact": 58,
+      "veryClose": 9575,
+      "close": 2620,
+      "far": 5108,
+      "noMatch": 906,
+      "rightPosition": 1002,
+      "wrongPosition": 17265
     },
     "best-exclusive": {
-      "comparisons": 23159,
-      "exact": 11,
-      "veryClose": 7746,
-      "close": 2674,
-      "far": 6922,
-      "noMatch": 5806,
-      "rightPosition": 1064,
-      "wrongPosition": 22095
+      "comparisons": 18267,
+      "exact": 31,
+      "veryClose": 5316,
+      "close": 1855,
+      "far": 5646,
+      "noMatch": 5419,
+      "rightPosition": 1053,
+      "wrongPosition": 17214
     }
   }
 }

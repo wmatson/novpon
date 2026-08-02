@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "build:corpus": "vite-node scripts/build-dra-corpus.ts",
+    "restrict:corpus": "vite-node scripts/restrict-corpus.ts",
     "vendor:model": "vite-node scripts/vendor-model.ts",
     "validate:assets": "vite-node scripts/validate-assets.ts",
     "calibrate": "vite-node scripts/calibrate-thresholds.ts",

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { isCuratedCorpusEntry } from '../src/corpus/curated';
 
 const REVISION = '0bf4218b9b46b5b00d29a703b5b74226051b97a5a';
 const sourceDir = resolve(process.env.DRA_SOURCE_DIR ?? '.cache/dra-raw');
@@ -63,9 +64,10 @@ for (const slug of BOOK_ORDER) {
   }
 }
 
-const corpus = `${JSON.stringify(entries, null, 2)}\n`;
+const curatedEntries = entries.filter(isCuratedCorpusEntry);
+const corpus = `${JSON.stringify(curatedEntries, null, 2)}\n`;
 const digest = createHash('sha256').update(corpus).digest('hex');
 await mkdir(outputDir, { recursive: true });
 await writeFile(join(outputDir, 'dra-corpus.json'), corpus);
-await writeFile(join(outputDir, 'dra-corpus-report.json'), `${JSON.stringify({ upstreamRepository: 'janvier-s/original-douay-rheims', upstreamRevision: REVISION, includedVerseCount: entries.length, excludedOverlengthCount, malformedEntryCount, sha256: digest }, null, 2)}\n`);
-console.log({ includedVerseCount: entries.length, excludedOverlengthCount, malformedEntryCount, sha256: digest });
+await writeFile(join(outputDir, 'dra-corpus-report.json'), `${JSON.stringify({ upstreamRepository: 'janvier-s/original-douay-rheims', upstreamRevision: REVISION, includedVerseCount: curatedEntries.length, excludedOverlengthCount, excludedByCurationCount: entries.length - curatedEntries.length, malformedEntryCount, sha256: digest }, null, 2)}\n`);
+console.log({ includedVerseCount: curatedEntries.length, excludedOverlengthCount, excludedByCurationCount: entries.length - curatedEntries.length, malformedEntryCount, sha256: digest });

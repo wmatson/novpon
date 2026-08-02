@@ -83,7 +83,7 @@ function App() {
     <p className="lede">Find the sentence hiding in plain sight.</p>
     <div className="menu">
       <button onClick={() => go('/daily')}><strong>Daily puzzle</strong><small>A new sentence every UTC day</small></button>
-      <button onClick={() => go('/random')}><strong>Random verse</strong><small>Draw one from the Douay-Rheims</small></button>
+      <button onClick={() => go('/random')}><strong>Random verse</strong><small>Draw one from the curated collection</small></button>
       <button className="outline" onClick={() => setMessage('creator')}><strong>Make a puzzle</strong><small>Turn your own sentence into a challenge</small></button>
     </div>
     {message === 'creator' && <div className="creator">
@@ -94,7 +94,19 @@ function App() {
       <button onClick={() => { try { go(encodeCustomPuzzle(sentence, hint)); } catch (error) { setMessage(error instanceof Error ? error.message : 'Invalid sentence.'); } }}>Create link</button>
     </div>}
     <p className="hint">Semantic clues, exact words. No hints are given away.</p>
+    <a className="notes-link" href="#/notes">Notes on the corpus →</a>
     <a className="github-link" href="https://github.com/wmatson/novpon" target="_blank" rel="noreferrer">View source on GitHub ↗</a>
+  </main>;
+
+  if (route.kind === 'notes') return <main className="shell notes-page">
+    <button className="back" onClick={() => go('/')}>← home</button>
+    <p className="eyebrow">ABOUT THE CORPUS</p>
+    <h2>Why these verses?</h2>
+    <p>Novpon uses a curated subset of the Douay-Rheims Bible so the daily and random games stay approachable. The full Bible makes the search space too broad for a short semantic guessing game.</p>
+    <p>The playable collection includes <b>Psalms, Proverbs, Sirach, Wisdom,</b> and <b>Ecclesiastes</b>, plus a small set of widely recognized verses from other books, including Genesis 1:1, John 3:16, Romans 8:28, Philippians 4:13, and Revelation 21:4.</p>
+    <p>Each corpus entry keeps a stable compound identifier in the form <code>book-slug:chapter:verse</code>. That identifier powers share links, so a shared random verse can be reopened without depending on its ordinal position in the corpus.</p>
+    <p>Manual puzzles are separate: you can still create a link for any sentence up to the normal length limit.</p>
+    <a className="notes-link" href="#/random">Play a random verse →</a>
   </main>;
 
   if (!puzzle) return <main className="shell"><button className="back" onClick={() => go('/')}>← home</button><p>{message || 'Loading your sentence…'}</p></main>;
