@@ -1,6 +1,6 @@
 # Novpon
 
-Novpon is a mobile-first, client-side semantic sentence guessing game. Guesses may contain any number of words so players can explore longer targets; only a complete exact sentence in the correct order wins. Words are graded as exact, very close, close, far, or no match.
+Novpon is a mobile-first, client-side semantic sentence guessing game. Guesses may contain any number of words so players can explore longer targets; only a complete exact sentence in the correct order wins. Words are graded as exact, wrong position, very close, close, or no match.
 
 Play it live at [wmatson.github.io/novpon](https://wmatson.github.io/novpon/).
 
@@ -58,7 +58,7 @@ Random and daily modes lazy-load the corpus from `public/data` so the 9 MB data 
 
 Daily puzzles use verified League of Entropy quicknet beacons through `drand-client`. The implementation requests the first round at or after UTC midnight, derives a domain-separated SHA-256 seed, retries briefly when the round has not emitted, and never substitutes local entropy.
 
-Similarity handling was benchmarked over 1,000 curated corpus verses and 18,267 randomized comparisons. The selected `best-reusable` strategy independently chooses the matchiest target for every guess word, without consuming target words. It produced 58 exact, 9,575 very-close, 2,620 close, 5,108 far, and 906 no-match results with the current thresholds. The benchmark compares this with same-index and target-consuming exclusive matching; reports are checked in under `benchmarks/`.
+Similarity handling was benchmarked over 1,000 curated corpus verses and 18,267 randomized comparisons. The selected `best-reusable` strategy independently chooses the matchiest target for every guess word, without consuming target words. It produced 58 exact, 9,575 very-close, 2,620 close, and 6,014 no-match results with the current thresholds. The benchmark compares this with same-index and target-consuming exclusive matching; reports are checked in under `benchmarks/`.
 
 Browser-flow tests cover the menu, custom puzzle creation, random launch, live word counting, and 320px layout through Playwright. Run them with `npm run test:e2e`.
 

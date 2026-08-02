@@ -8,8 +8,7 @@
       "exact": 1,
       "veryClose": 931,
       "close": 416,
-      "far": 2375,
-      "noMatch": 14544,
+      "noMatch": 16919,
       "rightPosition": 18267,
       "wrongPosition": 0
     },
@@ -18,8 +17,7 @@
       "exact": 58,
       "veryClose": 9575,
       "close": 2620,
-      "far": 5108,
-      "noMatch": 906,
+      "noMatch": 6014,
       "rightPosition": 1002,
       "wrongPosition": 17265
     },
@@ -28,8 +26,7 @@
       "exact": 31,
       "veryClose": 5316,
       "close": 1855,
-      "far": 5646,
-      "noMatch": 5419,
+      "noMatch": 11065,
       "rightPosition": 1053,
       "wrongPosition": 17214
     }
