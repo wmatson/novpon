@@ -11,8 +11,8 @@ test('custom puzzle creation shows a live word counter', async ({ page }) => {
   await page.locator('textarea').fill('Bright river');
   await expect(page.locator('.counter')).toHaveText('2 words · 12/250 characters');
   await page.getByRole('button', { name: /create link/i }).click();
-  await expect(page.locator('.game-header')).toContainText('Use exactly 2 words');
-  await expect(page.locator('.guess-counter')).toHaveText('0/2 words');
+  await expect(page.locator('.game-header')).toContainText('target has 2 words');
+  await expect(page.locator('.guess-counter')).toHaveText('0 words · target 2');
   await expect(page.locator('.message')).toHaveText('', { timeout: 60_000 });
 });
 

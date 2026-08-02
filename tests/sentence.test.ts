@@ -27,4 +27,15 @@ describe('sentence behavior', () => {
     expect(result.feedback.every(item => item.position === 'wrong')).toBe(true);
     expect(result.won).toBe(false);
   });
+  it('accepts exploratory guesses with any non-empty word count', async () => {
+    const result = await gradeGuess(createPuzzle('alpha beta'), 'gamma', new FakeEmbedder());
+    expect(result.lengthError).toBeUndefined();
+    expect(result.feedback).toHaveLength(1);
+    expect(result.won).toBe(false);
+  });
+  it('consumes duplicate exact occurrences one-to-one', async () => {
+    const result = await gradeGuess(createPuzzle('alpha alpha'), 'alpha alpha alpha', new FakeEmbedder());
+    expect(result.feedback.slice(0, 2).every(item => item.category === 'exact')).toBe(true);
+    expect(result.feedback[2].category).not.toBe('exact');
+  });
 });

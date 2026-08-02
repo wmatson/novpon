@@ -1,6 +1,6 @@
 # Novpon
 
-Novpon is a mobile-first, client-side semantic sentence guessing game. Each guess must contain the target sentence's exact number of words. Words are graded as exact, very close, close, far, or no match; only exact words in the correct position win.
+Novpon is a mobile-first, client-side semantic sentence guessing game. Guesses may contain any number of words so players can explore longer targets; only a complete exact sentence in the correct order wins. Words are graded as exact, very close, close, far, or no match.
 
 ## Modes
 

@@ -1,38 +1,50 @@
 import { tokenize } from '../sentence/tokenize';
 import { cosineSimilarity, DeterministicWordEmbedder, type WordEmbedder } from '../embedding/word-embedder';
 import { categoryFor, roundSimilarity } from './thresholds';
-import type { GradeResult, Position } from './types';
+import type { Feedback, GradeResult, Position } from './types';
 import type { Puzzle } from '../puzzle/types';
 
 export async function gradeGuess(puzzle: Puzzle, guess: string, embedder: WordEmbedder = new DeterministicWordEmbedder()): Promise<GradeResult> {
   const guessTokens = tokenize(guess);
-  if (guessTokens.length !== puzzle.wordCount) return { feedback: [], won: false, lengthError: `This puzzle has ${puzzle.wordCount} words; your guess has ${guessTokens.length}.` };
-  if (guessTokens.every((token, index) => token.normalized === puzzle.targetTokens[index].normalized)) {
-    return { feedback: guessTokens.map(token => ({ guess: token.surface, category: 'exact' as const, position: 'right' as const, similarity: 1 })), won: true };
-  }
-  const words = [...new Set([...guessTokens, ...puzzle.targetTokens].map(token => token.normalized))];
-  const vectors = await embedder.embedWords(words);
-  const feedback = guessTokens.map((token, index) => {
-    const guessVector = vectors.get(token.normalized);
-    let bestTargetIndex = 0;
-    let bestSimilarity = -Infinity;
-    puzzle.targetTokens.forEach((target, targetIndex) => {
-      const targetVector = vectors.get(target.normalized);
-      const similarity = guessVector && targetVector ? cosineSimilarity(guessVector, targetVector) : 0;
-      // Ties prefer the same position, then the earliest target. Targets are
-      // intentionally reusable: each guess is graded independently.
-      if (similarity > bestSimilarity || (similarity === bestSimilarity && targetIndex === index)) {
-        bestSimilarity = similarity;
-        bestTargetIndex = targetIndex;
-      }
-    });
-    const target = puzzle.targetTokens[bestTargetIndex];
-    const similarity = roundSimilarity(bestSimilarity);
-    if (token.normalized === target.normalized) {
-      return { guess: token.surface, category: 'exact' as const, position: (bestTargetIndex === index ? 'right' : 'wrong') as Position, similarity: 1 };
+  if (!guessTokens.length) return { feedback: [], won: false, lengthError: 'Enter at least one word.' };
+
+  const feedback: Array<Feedback | undefined> = Array.from({ length: guessTokens.length });
+  const remainingTargets = new Set(puzzle.targetTokens.map((_, index) => index));
+  const remainingGuesses = new Set(guessTokens.map((_, index) => index));
+
+  // Exact matches are consumed one-to-one, including duplicate occurrences.
+  guessTokens.forEach((token, index) => {
+    if (token.normalized === puzzle.targetTokens[index]?.normalized) {
+      feedback[index] = { guess: token.surface, category: 'exact', position: 'right', similarity: 1 };
+      remainingGuesses.delete(index); remainingTargets.delete(index);
     }
-    const category = categoryFor(similarity);
-    return { guess: token.surface, category, position: (category === 'no-match' ? null : bestTargetIndex === index ? 'right' : 'wrong') as Position, similarity };
   });
-  return { feedback, won: feedback.every(item => item.category === 'exact' && item.position === 'right') };
+  for (const index of [...remainingGuesses]) {
+    const targetIndex = [...remainingTargets].find(candidate => puzzle.targetTokens[candidate].normalized === guessTokens[index].normalized);
+    if (targetIndex === undefined) continue;
+    feedback[index] = { guess: guessTokens[index].surface, category: 'exact', position: 'wrong', similarity: 1 };
+    remainingGuesses.delete(index); remainingTargets.delete(targetIndex);
+  }
+
+  if (!remainingGuesses.size) return { feedback: feedback as Feedback[], won: guessTokens.length === puzzle.wordCount && feedback.every(item => item?.category === 'exact' && item.position === 'right') };
+  const semanticTargets = [...remainingTargets];
+  const words = [...new Set([...guessTokens, ...semanticTargets.map(index => puzzle.targetTokens[index])].map(token => token.normalized))];
+  const vectors = await embedder.embedWords(words);
+  for (const index of remainingGuesses) {
+    const guessVector = vectors.get(guessTokens[index].normalized);
+    let bestTargetIndex: number | undefined; let bestSimilarity = -Infinity;
+    for (const targetIndex of semanticTargets) {
+      const targetVector = vectors.get(puzzle.targetTokens[targetIndex].normalized);
+      const similarity = guessVector && targetVector ? cosineSimilarity(guessVector, targetVector) : 0;
+      if (similarity > bestSimilarity || (similarity === bestSimilarity && targetIndex === index)) { bestSimilarity = similarity; bestTargetIndex = targetIndex; }
+    }
+    if (bestTargetIndex === undefined) {
+      feedback[index] = { guess: guessTokens[index].surface, category: 'no-match', position: null, similarity: 0 };
+      continue;
+    }
+    const similarity = roundSimilarity(bestSimilarity); const category = categoryFor(similarity);
+    feedback[index] = { guess: guessTokens[index].surface, category, position: (category === 'no-match' ? null : bestTargetIndex === index ? 'right' : 'wrong') as Position, similarity };
+  }
+  const ordered = feedback as Feedback[];
+  return { feedback: ordered, won: guessTokens.length === puzzle.wordCount && ordered.every(item => item.category === 'exact' && item.position === 'right') };
 }
