@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 test('main menu has the three entry points in order', async ({ page }) => {
   await page.goto('/#/');
   await expect(page.locator('.menu button strong')).toHaveText(['Daily puzzle', 'Random verse', 'Make a puzzle']);
+  await expect(page.getByRole('link', { name: /view source on github/i })).toHaveAttribute('href', 'https://github.com/wmatson/novpon');
 });
 
 test('custom puzzle creation shows a live word counter', async ({ page }) => {

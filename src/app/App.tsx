@@ -85,6 +85,7 @@ function App() {
       <button onClick={() => { try { go(encodeCustomPuzzle(sentence, hint)); } catch (error) { setMessage(error instanceof Error ? error.message : 'Invalid sentence.'); } }}>Create link</button>
     </div>}
     <p className="hint">Semantic clues, exact words. No hints are given away.</p>
+    <a className="github-link" href="https://github.com/wmatson/novpon" target="_blank" rel="noreferrer">View source on GitHub ↗</a>
   </main>;
 
   if (!puzzle) return <main className="shell"><button className="back" onClick={() => go('/')}>← home</button><p>{message || 'Loading your sentence…'}</p></main>;
@@ -107,6 +108,7 @@ function App() {
     </div>)}</div>
     {results.at(-1)?.won ? <section className="success"><span>✦</span><h3>Sentence found</h3><p>Nice work. The target was solved exactly.</p>{source && <p className="reference">{source.book} {source.chapter}:{source.verse}</p>}<button onClick={() => go('/')}>Play another</button></section> : <><form onSubmit={submit} className="guess-form"><input value={guess} onInput={e => setGuess((e.target as HTMLInputElement).value)} placeholder="Type your guess…" autoFocus /><button disabled={busy}>Guess</button></form><p className={`guess-counter${tokenize(guess).length === puzzle.wordCount ? ' ready' : ''}`}>{tokenize(guess).length} words · target {puzzle.wordCount}</p></>}
     <p className="message" role="status" aria-live="polite">{message}</p><div className="legend"><span><i className="dot exact" />exact</span><span><i className="dot very-close" />very close</span><span><i className="dot close" />close</span><span><i className="dot far" />far</span><span><i className="dot no-match" />no match</span></div>
+    <a className="github-link" href="https://github.com/wmatson/novpon" target="_blank" rel="noreferrer">View source on GitHub ↗</a>
   </main>;
 }
 export default App;
