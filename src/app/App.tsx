@@ -21,6 +21,7 @@ function App() {
   const [sentence, setSentence] = useState('');
   const [hint, setHint] = useState('');
   const [source, setSource] = useState<CorpusEntry['source']>();
+  const [selectedRandomId, setSelectedRandomId] = useState<string>();
   const [corpus, setCorpus] = useState<CorpusEntry[] | null>(null);
   const [guess, setGuess] = useState('');
   const [results, setResults] = useState<GradeResult[]>([]);
@@ -29,11 +30,12 @@ function App() {
   const embedder = useMemo(() => new WorkerWordEmbedder(), []);
   const sentenceWordCount = tokenize(sentence).length;
   const sentenceCharacterCount = [...sentence].length;
+  const randomId = route.kind === 'random' ? route.id ?? selectedRandomId : undefined;
 
   useEffect(() => {
     const listener = () => {
       setRoute(routeFromHash()); setSentence(''); setHint(''); setSource(undefined);
-      setResults([]); setGuess(''); setMessage('');
+      setSelectedRandomId(undefined); setResults([]); setGuess(''); setMessage('');
     };
     addEventListener('hashchange', listener);
     return () => removeEventListener('hashchange', listener);
@@ -64,7 +66,14 @@ function App() {
       const loadedCorpus = corpus ?? await loadDraCorpus(import.meta.env.BASE_URL);
       if (!corpus) setCorpus([...loadedCorpus]);
       const entropy = route.kind === 'daily' ? await daily.entropyForDate(utcDate()) : browserEntropy();
-      const selection = await selectSentence(loadedCorpus, entropy);
+      const selection = route.kind === 'random' && route.id
+        ? { entry: loadedCorpus.find(entry => entry.id === route.id), corpusIndex: -1 }
+        : await selectSentence(loadedCorpus, entropy);
+      if (!selection.entry) throw new Error('That shared random verse is not in this corpus.');
+      if (route.kind === 'random' && !route.id) {
+        setSelectedRandomId(selection.entry.id);
+      }
+      if (route.kind === 'random' && route.id) setSelectedRandomId(route.id);
       setSentence(selection.entry.text); setSource(selection.entry.source); setMessage('');
     })().catch(error => setMessage(error instanceof Error ? error.message : 'Could not load the verse corpus.'));
   }, [route, sentence, corpus]);
@@ -96,12 +105,25 @@ function App() {
     catch (error) { setMessage(error instanceof Error ? error.message : 'Semantic grading failed. Your guess is still in the input.'); }
     finally { setBusy(false); }
   }
+  async function shareRandom() {
+    if (!randomId) return;
+    const url = new URL(location.href); url.hash = `/random/${encodeURIComponent(randomId)}`;
+    try {
+      const sharingNavigator = navigator as Navigator & { share?: (data: { title: string; url: string }) => Promise<void> };
+      if (sharingNavigator.share) await sharingNavigator.share({ title: 'Novpon random verse', url: url.toString() });
+      else { await navigator.clipboard.writeText(url.toString()); setMessage('Share link copied.'); }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      setMessage('Could not share this verse.');
+    }
+  }
 
   return <main className="shell game">
     <button className="back" onClick={() => go('/')}>← home</button>
     <div className="game-header"><p className="eyebrow">{route.kind === 'daily' ? `DAILY · ${utcDate()}` : route.kind === 'random' ? 'RANDOM VERSE' : 'CUSTOM PUZZLE'}</p><h2>Guess the sentence</h2>
       {source && <p className="source-hint">Bible book: <b>{source.book}</b></p>}{hint && <p className="source-hint">Hint: <b>{hint}</b></p>}
       <p>The target has <b>{puzzle.wordCount}</b> words. Guess any number; exact words in order solve it.</p>
+      {route.kind === 'random' && randomId && <button className="share-button" onClick={shareRandom}>Share this verse ↗</button>}
     </div>
     <div className="guess-list">{results.map((result, index) => <div className="attempt" key={index}><span className="attempt-number">Guess {index + 1}</span>
       {result.lengthError ? <p className="error">{result.lengthError}</p> : result.feedback.map((item, wordIndex) => <span className={`token ${item.category}`} aria-label={`${item.guess}: ${item.category.replace('-', ' ')}${item.position ? `, ${item.position} position` : ''}`} key={wordIndex}><b>{item.guess}</b><small>{item.category.replace('-', ' ')}{item.position ? ` · ${item.position} position` : ''}</small></span>)}
