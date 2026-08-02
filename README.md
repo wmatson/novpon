@@ -2,6 +2,8 @@
 
 Novpon is a mobile-first, client-side semantic sentence guessing game. Guesses may contain any number of words so players can explore longer targets; only a complete exact sentence in the correct order wins. Words are graded as exact, very close, close, far, or no match.
 
+Play it live at [wmatson.github.io/novpon](https://wmatson.github.io/novpon/).
+
 ## Modes
 
 - **Daily puzzle** — deterministic UTC-day entry point.
@@ -23,6 +25,28 @@ npm run benchmark:transformers
 ```
 
 The app is a Vite + Preact + TypeScript static site. Hash routing keeps it compatible with GitHub Pages, and `.github/workflows/pages.yml` builds and deploys `dist` on pushes to `main`.
+
+## Forking for another corpus
+
+Novpon does not require a backend or a live corpus service. A fork can replace the checked-in static corpus and deploy the result as an ordinary GitHub Pages site.
+
+1. Fork and clone the repository, then install dependencies with `npm install`.
+2. Replace `public/data/dra-corpus.json` with a JSON array of sentence records. Each record should have stable `id` and `text` fields plus source metadata, for example:
+
+   ```json
+   {
+     "id": "chapter-1-sentence-1",
+     "text": "A sentence from the replacement corpus.",
+     "source": { "book": "My Collection", "chapter": 1, "verse": 1 }
+   }
+   ```
+
+   Keep the existing limits: sentence text must be at most 250 Unicode code points and contain at least one recognized word. Preserve a deterministic record order so daily selection remains reproducible.
+3. Update or replace `scripts/build-dra-corpus.ts` if the source needs different parsing. The DRA builder is only a convenience for the pinned Bible input; a different corpus may use its own importer that emits the same JSON shape.
+4. Update `public/data/dra-corpus-report.json` or adapt `scripts/validate-assets.ts` to validate the new corpus. Run `npm run validate:assets` and `npm run build` before deploying.
+5. For non-Bible metadata, change the `Bible book` hint label in `src/app/App.tsx` to match the meaning of `source.book`. Manual puzzles and the semantic grading code do not need to change.
+
+The corpus is loaded lazily by Random Verse and Daily mode from `public/data/dra-corpus.json`; no upstream corpus URL is needed at runtime. The bundled embedding model in `public/models` can be reused as-is, or replaced by following the model-vendoring workflow in `scripts/vendor-model.ts` and updating the worker configuration if the replacement model has different dimensions or runtime requirements.
 
 ## Architecture
 
