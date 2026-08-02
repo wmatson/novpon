@@ -1,0 +1,37 @@
+{
+  "sampleSize": 1000,
+  "vocabularySize": 14802,
+  "embedder": "DeterministicWordEmbedder",
+  "modes": {
+    "same-index": {
+      "comparisons": 23159,
+      "exact": 0,
+      "veryClose": 1264,
+      "close": 636,
+      "far": 3077,
+      "noMatch": 18182,
+      "rightPosition": 23159,
+      "wrongPosition": 0
+    },
+    "best-reusable": {
+      "comparisons": 23159,
+      "exact": 30,
+      "veryClose": 13693,
+      "close": 3464,
+      "far": 5201,
+      "noMatch": 771,
+      "rightPosition": 972,
+      "wrongPosition": 22187
+    },
+    "best-exclusive": {
+      "comparisons": 23159,
+      "exact": 11,
+      "veryClose": 7746,
+      "close": 2674,
+      "far": 6922,
+      "noMatch": 5806,
+      "rightPosition": 1064,
+      "wrongPosition": 22095
+    }
+  }
+}

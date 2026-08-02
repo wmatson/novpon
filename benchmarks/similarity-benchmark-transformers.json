@@ -1,0 +1,42 @@
+{
+  "sampleSize": 500,
+  "vocabularySize": 14802,
+  "model": "Xenova/all-MiniLM-L6-v2",
+  "thresholds": {
+    "far": 0.25,
+    "close": 0.45,
+    "veryClose": 0.65
+  },
+  "modes": {
+    "same-index": {
+      "comparisons": 11527,
+      "exact": 0,
+      "veryClose": 3,
+      "close": 36,
+      "far": 4840,
+      "noMatch": 6648,
+      "rightPosition": 11527,
+      "wrongPosition": 0
+    },
+    "best-reusable": {
+      "comparisons": 11527,
+      "exact": 13,
+      "veryClose": 36,
+      "close": 738,
+      "far": 10406,
+      "noMatch": 334,
+      "rightPosition": 579,
+      "wrongPosition": 10948
+    },
+    "best-exclusive": {
+      "comparisons": 11527,
+      "exact": 5,
+      "veryClose": 19,
+      "close": 338,
+      "far": 8721,
+      "noMatch": 2444,
+      "rightPosition": 539,
+      "wrongPosition": 10988
+    }
+  }
+}

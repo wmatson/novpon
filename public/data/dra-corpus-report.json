@@ -1,0 +1,8 @@
+{
+  "upstreamRepository": "janvier-s/original-douay-rheims",
+  "upstreamRevision": "0bf4218b9b46b5b00d29a703b5b74226051b97a5a",
+  "includedVerseCount": 35972,
+  "excludedOverlengthCount": 1175,
+  "malformedEntryCount": 0,
+  "sha256": "0a1261c93cec852bfaccc08d8f0c81045fdd8050407d3fa868c95460f9c55f4d"
+}

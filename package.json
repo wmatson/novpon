@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:corpus": "vite-node scripts/build-dra-corpus.ts",
     "calibrate": "vite-node scripts/calibrate-thresholds.ts",
+    "benchmark": "vite-node scripts/benchmark-similarity.ts",
+    "benchmark:transformers": "vite-node scripts/benchmark-transformers.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "preview": "vite preview"

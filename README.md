@@ -16,6 +16,8 @@ npm run dev
 npm test
 npm run build
 npm run calibrate
+npm run benchmark
+npm run benchmark:transformers
 ```
 
 The app is a Vite + Preact + TypeScript static site. Hash routing keeps it compatible with GitHub Pages, and `.github/workflows/pages.yml` builds and deploys `dist` on pushes to `main`.
@@ -24,7 +26,11 @@ The app is a Vite + Preact + TypeScript static site. Hash routing keeps it compa
 
 The implementation keeps the plan's seams explicit: `createPuzzle(sentence)` knows only about sentence text; `selectSentence(corpus, entropy)` is deterministic and receives its entropy from the caller; and grading consumes a `WordEmbedder` interface. Sentence tokenization uses Unicode-aware word recognition with NFKC normalization, NFC display text, preserved internal apostrophes/hyphens, and no stop-word handling.
 
-`DeterministicWordEmbedder` is the small offline fallback used by the initial static build. The embedding interface is ready for a Transformers.js worker/model implementation without changing puzzle or grading code. The checked-in corpus is a compact starter artifact; `scripts/build-dra-corpus.ts` can be added as the upstream corpus vendoring step before publishing a full corpus.
+The checked-in DRA corpus is generated from `janvier-s/original-douay-rheims` revision `0bf4218b9b46b5b00d29a703b5b74226051b97a5a` by `scripts/build-dra-corpus.ts`. The current artifact contains 35,972 eligible verses, excludes 1,175 overlength verses, and records its SHA-256 digest in `public/data/dra-corpus-report.json`. To regenerate it, check out the pinned revision and run `DRA_SOURCE_DIR=/path/to/bible/raw npm run build:corpus`.
+
+Random and daily modes lazy-load the corpus from `public/data` so the 9 MB data file does not inflate the initial JavaScript bundle. The app now uses `Xenova/all-MiniLM-L6-v2` through Transformers.js for browser embeddings; the model is downloaded and cached by the browser on the first guess.
+
+Similarity handling was benchmarked over 500 corpus verses and 11,527 randomized comparisons. The selected `best-reusable` strategy independently chooses the matchiest target for every guess word, without consuming target words. It produced 36 very-close, 738 close, 10,406 far, and 334 no-match results with the current thresholds. The benchmark compares this with same-index and target-consuming exclusive matching; reports are checked in under `benchmarks/`.
 
 ## Why “Novpon”?
 
