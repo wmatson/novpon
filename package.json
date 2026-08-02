@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "calibrate": "vite-node scripts/calibrate-thresholds.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "preview": "vite preview"

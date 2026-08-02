@@ -15,6 +15,7 @@ npm install
 npm run dev
 npm test
 npm run build
+npm run calibrate
 ```
 
 The app is a Vite + Preact + TypeScript static site. Hash routing keeps it compatible with GitHub Pages, and `.github/workflows/pages.yml` builds and deploys `dist` on pushes to `main`.
