@@ -4,3 +4,4 @@
  .reference{font-size:13px!important;color:#e4bd73!important;letter-spacing:.08em;text-transform:uppercase}
  .guess-counter{margin:8px 2px 0;text-align:right;color:#9a948b;font-size:10px}.guess-counter.ready{color:#71843d}
  .attempt{position:relative;padding:14px 0 16px;border-top:2px solid #d2cbc0}.attempt:first-child{border-top:0;padding-top:0}.attempt-number{flex:0 0 100%;margin-bottom:7px;color:#8d877e;font-size:9px;letter-spacing:.12em;text-transform:uppercase}.attempt .error{margin:0}
+ .creator .hint-input{height:58px}.optional{color:#9a948b}.source-hint{font:500 15px Fraunces,serif!important;color:#a75e3f!important;margin:0 0 8px!important}.source-hint b{color:#292724}
