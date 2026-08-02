@@ -28,9 +28,13 @@ The implementation keeps the plan's seams explicit: `createPuzzle(sentence)` kno
 
 The checked-in DRA corpus is generated from `janvier-s/original-douay-rheims` revision `0bf4218b9b46b5b00d29a703b5b74226051b97a5a` by `scripts/build-dra-corpus.ts`. The current artifact contains 35,972 eligible verses, excludes 1,175 overlength verses, and records its SHA-256 digest in `public/data/dra-corpus-report.json`. To regenerate it, check out the pinned revision and run `DRA_SOURCE_DIR=/path/to/bible/raw npm run build:corpus`.
 
-Random and daily modes lazy-load the corpus from `public/data` so the 9 MB data file does not inflate the initial JavaScript bundle. The app now uses `Xenova/all-MiniLM-L6-v2` through Transformers.js for browser embeddings; the model is downloaded and cached by the browser on the first guess.
+Random and daily modes lazy-load the corpus from `public/data` so the 9 MB data file does not inflate the initial JavaScript bundle. The app uses the pinned local `Xenova/all-MiniLM-L6-v2` model through a Web Worker: WebGPU is attempted first, then WASM is used as a compatibility fallback. Model files are vendored into `public/models` and validated by `npm run validate:assets`.
+
+Daily puzzles use verified League of Entropy quicknet beacons through `drand-client`. The implementation requests the first round at or after UTC midnight, derives a domain-separated SHA-256 seed, retries briefly when the round has not emitted, and never substitutes local entropy.
 
 Similarity handling was benchmarked over 500 corpus verses and 11,527 randomized comparisons. The selected `best-reusable` strategy independently chooses the matchiest target for every guess word, without consuming target words. It produced 36 very-close, 738 close, 10,406 far, and 334 no-match results with the current thresholds. The benchmark compares this with same-index and target-consuming exclusive matching; reports are checked in under `benchmarks/`.
+
+Browser-flow tests cover the menu, custom puzzle creation, random launch, live word counting, and 320px layout through Playwright. Run them with `npm run test:e2e`.
 
 ## Why “Novpon”?
 

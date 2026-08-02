@@ -6,7 +6,10 @@ import type { Puzzle } from '../puzzle/types';
 
 export async function gradeGuess(puzzle: Puzzle, guess: string, embedder: WordEmbedder = new DeterministicWordEmbedder()): Promise<GradeResult> {
   const guessTokens = tokenize(guess);
-  if (guessTokens.length !== puzzle.wordCount) return { feedback: [], won: false, lengthError: `Your guess needs exactly ${puzzle.wordCount} words.` };
+  if (guessTokens.length !== puzzle.wordCount) return { feedback: [], won: false, lengthError: `This puzzle has ${puzzle.wordCount} words; your guess has ${guessTokens.length}.` };
+  if (guessTokens.every((token, index) => token.normalized === puzzle.targetTokens[index].normalized)) {
+    return { feedback: guessTokens.map(token => ({ guess: token.surface, category: 'exact' as const, position: 'right' as const, similarity: 1 })), won: true };
+  }
   const words = [...new Set([...guessTokens, ...puzzle.targetTokens].map(token => token.normalized))];
   const vectors = await embedder.embedWords(words);
   const feedback = guessTokens.map((token, index) => {
