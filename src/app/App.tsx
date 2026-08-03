@@ -10,6 +10,7 @@ import { browserEntropy } from '../random/browser-entropy';
 import { tokenize } from '../sentence/tokenize';
 import { WorkerWordEmbedder } from '../embedding/worker-client';
 import { loadDraCorpus } from '../corpus/dra-corpus';
+import { loadGameProgress, progressKeyForInstance, saveGameProgress } from '../storage/game-progress';
 import type { GradeResult } from '../grading/types';
 import type { CorpusEntry } from '../random/select-sentence';
 import './styles.css';
@@ -31,6 +32,15 @@ function App() {
   const sentenceWordCount = tokenize(sentence).length;
   const sentenceCharacterCount = [...sentence].length;
   const randomId = route.kind === 'random' ? route.id ?? selectedRandomId : undefined;
+  const progressKey = useMemo(() => {
+    if (route.kind === 'daily') return progressKeyForInstance({ kind: 'daily', id: utcDate() });
+    if (route.kind === 'random' && randomId) return progressKeyForInstance({ kind: 'random', id: randomId });
+    if (route.kind === 'custom') {
+      const hint = route.hintEncoded ? `?h=${route.hintEncoded}` : '';
+      return progressKeyForInstance({ kind: 'custom', id: `${route.encoded}${hint}` });
+    }
+    return undefined;
+  }, [route, randomId]);
 
   useEffect(() => {
     const listener = () => {
@@ -52,6 +62,10 @@ function App() {
     try { return createPuzzle(route.kind === 'custom' ? decodeSentence(route.encoded) : sentence); }
     catch { return null; }
   }, [route, sentence]);
+
+  useEffect(() => {
+    setResults(progressKey ? loadGameProgress(progressKey) : []);
+  }, [progressKey]);
 
   useEffect(() => {
     if (!puzzle) return;
@@ -113,7 +127,14 @@ function App() {
   const currentPuzzle = puzzle;
   async function submit(event: Event) {
     event.preventDefault(); if (!guess.trim() || busy) return; setBusy(true);
-    try { const result = await gradeGuess(currentPuzzle, guess, embedder); setResults(previous => [...previous, result]); setMessage(result.lengthError ?? (result.won ? 'You found it.' : '')); if (!result.lengthError) setGuess(''); }
+    try {
+      const result = await gradeGuess(currentPuzzle, guess, embedder);
+      const nextResults = [...results, result];
+      setResults(nextResults);
+      if (progressKey) saveGameProgress(progressKey, nextResults);
+      setMessage(result.lengthError ?? (result.won ? 'You found it.' : ''));
+      if (!result.lengthError) setGuess('');
+    }
     catch (error) { setMessage(error instanceof Error ? error.message : 'Semantic grading failed. Your guess is still in the input.'); }
     finally { setBusy(false); }
   }

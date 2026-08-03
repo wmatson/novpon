@@ -21,6 +21,20 @@ test('custom puzzle creation shows a live word counter', async ({ page }) => {
   await expect(page.locator('.message')).toHaveText('', { timeout: 60_000 });
 });
 
+test('custom puzzle progress survives a refresh', async ({ page }) => {
+  await page.goto('/#/');
+  await page.getByRole('button', { name: /make a puzzle/i }).click();
+  await page.locator('textarea:not(.hint-input)').fill('Bright river');
+  await page.getByRole('button', { name: /create link/i }).click();
+  await expect(page.locator('.message')).toHaveText('', { timeout: 60_000 });
+  await page.locator('input[placeholder="Type your guess…"]').fill('Bright river');
+  await page.getByRole('button', { name: 'Guess' }).click();
+  await expect(page.locator('.success')).toBeVisible();
+  await page.reload();
+  await expect(page.locator('.success')).toBeVisible();
+  await expect(page.locator('.guess-list')).toContainText('Bright');
+});
+
 test('random verse launches and mobile layout has no horizontal overflow', async ({ page }) => {
   await page.goto('/#/');
   await page.getByRole('button', { name: /random verse/i }).click();
