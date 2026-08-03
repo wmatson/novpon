@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import { go, routeFromHash, type Route } from './router';
 import { createPuzzle } from '../puzzle/create-puzzle';
 import { gradeGuess } from '../grading/grade-guess';
-import { encodeCustomPuzzle, decodeSentence, decodeHint } from '../sharing/sentence-url';
+import { encodeCustomPuzzle, encodeCorpusId, decodeSentence, decodeHint } from '../sharing/sentence-url';
 import { DrandDailyEntropy } from '../daily/daily-entropy';
 import { utcDate } from '../daily/utc-date';
 import { selectSentence } from '../random/select-sentence';
@@ -119,7 +119,7 @@ function App() {
   }
   async function shareRandom() {
     if (!randomId) return;
-    const url = new URL(location.href); url.hash = `/random/${encodeURIComponent(randomId)}`;
+    const url = new URL(location.href); url.hash = `/random/${encodeCorpusId(randomId)}`;
     try {
       const sharingNavigator = navigator as Navigator & { share?: (data: { title: string; url: string }) => Promise<void> };
       if (sharingNavigator.share) await sharingNavigator.share({ title: 'Novpon random verse', url: url.toString() });

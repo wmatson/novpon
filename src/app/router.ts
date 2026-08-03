@@ -1,3 +1,5 @@
+import { decodeCorpusId } from '../sharing/sentence-url';
+
 export type Route = { kind: 'home' } | { kind: 'notes' } | { kind: 'daily' } | { kind: 'random'; id?: string } | { kind: 'custom'; encoded: string; hintEncoded?: string };
 export function routeFromHash(hash = location.hash): Route {
   const path = hash.replace(/^#\/?/, '');
@@ -5,7 +7,7 @@ export function routeFromHash(hash = location.hash): Route {
   if (path === 'notes') return { kind: 'notes' };
   if (path === 'random') return { kind: 'random' };
   if (path.startsWith('random/')) {
-    try { return { kind: 'random', id: decodeURIComponent(path.slice('random/'.length)) }; }
+    try { return { kind: 'random', id: decodeCorpusId(path.slice('random/'.length)) }; }
     catch { return { kind: 'random', id: '' }; }
   }
   if (path.startsWith('p/')) { const [encoded, query] = path.slice(2).split('?h='); return { kind: 'custom', encoded, hintEncoded: query || undefined }; }

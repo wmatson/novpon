@@ -7,7 +7,7 @@ Play it live at [wmatson.github.io/novpon](https://wmatson.github.io/novpon/).
 ## Modes
 
 - **Daily puzzle** — deterministic UTC-day entry point.
-- **Random verse** — browser entropy selects a verse from the static DRA corpus. Use **Share this verse** to create a `/random/<corpus-entry-id>` link for that exact instance; visiting `/random` itself always draws a fresh verse, including after refresh.
+- **Random verse** — browser entropy selects a verse from the static DRA corpus. Use **Share this verse** to create a `/random/<encoded-corpus-entry-id>` link for that exact instance; visiting `/random` itself always draws a fresh verse, including after refresh.
 - **Make a puzzle** — encode any sentence (up to 250 Unicode code points) into a shareable `#/p/<base64url>` link.
 
 Daily and Random Verse games reveal the Bible book as a pre-solve hint. Manual puzzles can include an optional hint; when present, it is carried as an additional URL-safe Base64 `h` fragment parameter.

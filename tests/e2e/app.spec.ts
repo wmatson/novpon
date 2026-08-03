@@ -31,7 +31,7 @@ test('random verse launches and mobile layout has no horizontal overflow', async
 });
 
 test('a shared random verse opens the same corpus entry', async ({ page }) => {
-  await page.goto('/#/random/genesis%3A1%3A1');
+  await page.goto('/#/random/Z2VuZXNpczoxOjE');
   await expect(page.locator('.game-header')).toContainText('Bible book: Genesis');
   await expect(page.getByRole('button', { name: /share this verse/i })).toBeVisible();
 });
