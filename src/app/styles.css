@@ -19,5 +19,7 @@
 @media (prefers-color-scheme: dark) and (min-width:760px){.demo-results .attempt{border-color:#514b45}}
 .curve-row,.demo-curve-row{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;gap:4px}.curve-word{display:grid;justify-items:start;align-content:start;gap:1px;width:max-content;max-width:100%;min-height:26px}.closeness-curve{height:50px}
 @media (min-width:1200px){.curve-list{grid-template-columns:repeat(5,minmax(0,1fr))}.demo-results{grid-template-columns:repeat(5,minmax(0,1fr))}}
-.guess-composer{position:sticky;bottom:12px;z-index:10;margin:0 -8px;padding:10px 8px 8px;border:1px solid #d6d0c6;border-radius:12px;background:rgba(247,245,239,.96);box-shadow:0 8px 24px rgba(41,39,36,.14);backdrop-filter:blur(8px)}.curve-preview-tick{stroke:#292724;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:3 3;opacity:.72}
+.has-guess-composer{padding-bottom:132px}.guess-composer{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));z-index:10;width:min(calc(100% - 40px),680px);margin:0;transform:translateX(-50%);padding:10px 8px 8px;border:1px solid #d6d0c6;border-radius:12px;background:rgba(247,245,239,.96);box-shadow:0 8px 24px rgba(41,39,36,.14);backdrop-filter:blur(8px)}.curve-preview-tick{stroke:#292724;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:3 3;opacity:.72}
+@media (min-width:600px){.guess-composer{width:min(calc(100% - 64px),680px)}}
+@media (min-width:760px){.guess-composer{width:min(calc(100% - 72px),1040px)}}
 @media (prefers-color-scheme: dark){.guess-composer{border-color:#575149;background:rgba(29,27,25,.96);box-shadow:0 8px 24px rgba(0,0,0,.3)}.curve-preview-tick{stroke:#eee9df}}

@@ -59,7 +59,7 @@ test('typing previews the current word position across submitted curves', async 
   await page.locator('input[placeholder="Type your guess…"]').fill('Calm stone');
   await page.getByRole('button', { name: 'Guess' }).click();
   await expect(page.locator('.closeness-curve')).toHaveCount(2);
-  await expect(page.locator('.guess-composer')).toHaveCSS('position', 'sticky');
+  await expect(page.locator('.guess-composer')).toHaveCSS('position', 'fixed');
   await page.locator('input[placeholder="Type your guess…"]').fill('First');
   await expect(page.locator('.curve-preview-tick')).toHaveCount(2);
   await expect(page.locator('.curve-preview-tick').first()).toHaveAttribute('data-word-index', '0');

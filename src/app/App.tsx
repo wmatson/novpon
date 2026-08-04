@@ -22,6 +22,38 @@ const DEMO_TARGET = 'The quick brown fox jumped over the lazy dog by the river';
 const DEMO_WORDS = ['greatest', 'silent', 'animal', 'colorful', 'speed', 'royal', 'winter', 'garden'];
 const DEMO_PUZZLE = createPuzzle(DEMO_TARGET);
 
+function ensureInputVisible(input: HTMLInputElement) {
+  const viewport = window.visualViewport;
+  const viewportTop = viewport?.offsetTop ?? 0;
+  const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight);
+  const rect = input.getBoundingClientRect();
+  if (rect.top < viewportTop + 16 || rect.bottom > viewportBottom - 16) input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function useKeyboardInset(): number {
+  const [inset, setInset] = useState(0);
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    const update = () => {
+      const nextInset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      setInset(nextInset);
+      const active = document.activeElement;
+      if (nextInset > 0 && active instanceof HTMLInputElement && active.matches('.guess-form input')) requestAnimationFrame(() => ensureInputVisible(active));
+    };
+    update();
+    viewport.addEventListener('resize', update);
+    viewport.addEventListener('scroll', update);
+    addEventListener('resize', update);
+    return () => {
+      viewport.removeEventListener('resize', update);
+      viewport.removeEventListener('scroll', update);
+      removeEventListener('resize', update);
+    };
+  }, []);
+  return inset;
+}
+
 function curveGeometry(rawCurve: readonly number[], wordIndex: number, previewWordIndex?: number) {
   const curve = rawCurve.length ? rawCurve : [0];
   const width = 240;
@@ -113,6 +145,7 @@ function App() {
   const [results, setResults] = useState<GradeResult[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const keyboardInset = useKeyboardInset();
   const embedder = useMemo(() => new WorkerWordEmbedder(), []);
   const sentenceWordCount = tokenize(sentence).length;
   const sentenceCharacterCount = [...sentence].length;
@@ -260,7 +293,7 @@ function App() {
     }
   }
 
-  return <main className="shell game">
+  return <main className={`shell game${results.at(-1)?.won ? '' : ' has-guess-composer'}`}>
     <button className="back" onClick={() => go('/')}>← home</button>
     <div className="game-header"><p className="eyebrow">{route.kind === 'daily' ? `DAILY · ${utcDate()}` : route.kind === 'random' ? 'RANDOM VERSE' : 'CUSTOM PUZZLE'}</p><h2>Guess the sentence</h2>
       {source && <p className="source-hint">Bible book: <b>{source.book}</b></p>}{hint && <p className="source-hint">Hint: <b>{hint}</b></p>}
@@ -270,7 +303,7 @@ function App() {
     <div className="guess-list">{results.map((result, index) => <div className="attempt" key={index}><span className="attempt-number">Guess {index + 1}</span>
       <CurveList result={result} wordCount={currentPuzzle.wordCount} previewWordIndex={previewWordIndex} />
     </div>)}</div>
-    {results.at(-1)?.won ? <section className="success"><span>✦</span><h3>Sentence found</h3><p>Nice work. The target was solved exactly.</p>{source && <p className="reference">{source.book} {source.chapter}:{source.verse}</p>}<button onClick={() => go('/')}>Play another</button></section> : <div className="guess-composer"><form onSubmit={submit} className="guess-form"><input value={guess} onInput={e => setGuess((e.target as HTMLInputElement).value)} placeholder="Type your guess…" autoFocus /><button disabled={busy}>Guess</button></form><p className={`guess-counter${guessWordCount === puzzle.wordCount ? ' ready' : ''}`}>{guessWordCount} words · target {puzzle.wordCount}</p></div>}
+    {results.at(-1)?.won ? <section className="success"><span>✦</span><h3>Sentence found</h3><p>Nice work. The target was solved exactly.</p>{source && <p className="reference">{source.book} {source.chapter}:{source.verse}</p>}<button onClick={() => go('/')}>Play another</button></section> : <div className="guess-composer" style={{ bottom: `calc(12px + ${keyboardInset}px + env(safe-area-inset-bottom))` }}><form onSubmit={submit} className="guess-form"><input value={guess} onInput={e => setGuess((e.target as HTMLInputElement).value)} onFocus={e => ensureInputVisible(e.currentTarget)} placeholder="Type your guess…" autoFocus /><button disabled={busy}>Guess</button></form><p className={`guess-counter${guessWordCount === puzzle.wordCount ? ' ready' : ''}`}>{guessWordCount} words · target {puzzle.wordCount}</p></div>}
     <p className="message" role="status" aria-live="polite">{message}</p><p className="curve-help">Each curve shows closeness across the target sentence. Solid ticks mark submitted words; the dashed tick follows the word you’re typing.</p>
     <a className="github-link" href="https://github.com/wmatson/novpon" target="_blank" rel="noreferrer">View source on GitHub ↗</a>
   </main>;
