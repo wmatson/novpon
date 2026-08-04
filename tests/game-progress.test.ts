@@ -3,7 +3,7 @@ import { loadGameProgress, progressKeyForInstance, saveGameProgress } from '../s
 import type { GradeResult } from '../src/grading/types';
 
 const result: GradeResult = {
-  feedback: [{ guess: 'bright', category: 'exact', position: 'right', similarity: 1 }],
+  feedback: [{ guess: 'bright', category: 'exact', position: 'right', similarity: 1, curve: [1] }],
   won: false,
 };
 

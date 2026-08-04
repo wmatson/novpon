@@ -12,18 +12,11 @@ self.onmessage = async (event: MessageEvent<Request>) => {
   const request = event.data;
   try {
     if (request.type === 'load') {
-      const gpu = (self.navigator as Navigator & { gpu?: { requestAdapter(): Promise<unknown> } }).gpu;
-      const adapter = gpu ? await gpu.requestAdapter() : null;
-      try {
-        if (!adapter) throw new Error('WebGPU adapter unavailable.');
-        embedder = new TransformersWordEmbedder('webgpu');
-        await embedder.embedWords(['the']);
-        backend = 'webgpu';
-      } catch {
-        embedder = new TransformersWordEmbedder('wasm');
-        await embedder.embedWords(['the']);
-        backend = 'wasm';
-      }
+      // The vendored quantized model's WebGPU path can reuse a stale single-word
+      // embedding in some browsers. WASM is slower but keeps every word distinct.
+      embedder = new TransformersWordEmbedder('wasm');
+      await embedder.embedWords(['the']);
+      backend = 'wasm';
       reply({ id: request.id, type: 'ready', backend });
       return;
     }

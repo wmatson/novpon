@@ -46,7 +46,8 @@ function isFeedback(value: unknown): value is Feedback {
     && (value.position === null || typeof value.position === 'string')
     && POSITIONS.includes(value.position as Position)
     && typeof value.similarity === 'number'
-    && Number.isFinite(value.similarity);
+    && Number.isFinite(value.similarity)
+    && (!('curve' in value) || (Array.isArray(value.curve) && value.curve.every(item => typeof item === 'number' && Number.isFinite(item))));
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
